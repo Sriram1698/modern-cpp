@@ -14,11 +14,12 @@ ChatBot::ChatBot() : _image(nullptr), _chatLogic(nullptr), _rootNode(nullptr) {}
 // constructor WITH memory allocation
 ChatBot::ChatBot(std::string filename)
     : _chatLogic(nullptr), _rootNode(nullptr) {
+      std::cout << "Chatbot Constructor" << std::endl;
   _image = std::make_unique<wxBitmap>(filename, wxBITMAP_TYPE_PNG);
 }
 
 ChatBot::~ChatBot() {
-
+  std::cout << "Chatbot Destructor" << std::endl;
   //   // deallocate heap memory
   //   if (_image != NULL) // Attention: wxWidgets used NULL and not nullptr
   //   {
@@ -30,6 +31,7 @@ ChatBot::~ChatBot() {
 //// STUDENT CODE
 ////
 ChatBot::ChatBot(const ChatBot &input) {
+  std::cout << "Chatbot Copy Constructor" << std::endl;
   this->_image = std::make_unique<wxBitmap>(*(input._image));
   this->_currentNode = input._currentNode;
   this->_rootNode = input._rootNode;
@@ -42,6 +44,7 @@ ChatBot &ChatBot::operator=(const ChatBot &input) {
     return *this;
   }
 
+  std::cout << "Chatbot Assignment Operator" << std::endl;
   this->_image = std::make_unique<wxBitmap>(*(input._image));
   this->_currentNode = input._currentNode;
   this->_rootNode = input._rootNode;
@@ -52,6 +55,7 @@ ChatBot &ChatBot::operator=(const ChatBot &input) {
 
 ChatBot::ChatBot(ChatBot &&input) {
 
+  std::cout << "Chatbot Move Constructor" << std::endl;
   this->_image = std::move(input._image);
   this->_currentNode = input._currentNode;
   this->_rootNode = input._rootNode;
@@ -68,6 +72,7 @@ ChatBot &ChatBot::operator=(ChatBot &&input) {
     return *this;
   }
 
+  std::cout << "Chatbot Move Assignment Operator" << std::endl;
   this->_image = std::move(input._image);
   this->_currentNode = input._currentNode;
   this->_rootNode = input._rootNode;
