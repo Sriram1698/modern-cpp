@@ -19,6 +19,9 @@ Game::Game(std::size_t grid_width, std::size_t grid_height,
 
 Game::~Game() {
   std::cout << "\nGame has terminated successfully!\n";
+  if (foodCycleThread_.joinable()) {
+    foodCycleThread_.join();
+  }
   printSummary();
   saveScore();
 }
@@ -30,17 +33,16 @@ void Game::Run(Controller const &controller, Renderer &renderer,
   Uint32 frame_end;
   Uint32 frame_duration;
   int frame_count = 0;
-  bool running = true;
+  running_ = true;
 
   // Start the food cycle thread
-  std::thread foodLifeCycleThread(&Game::foodCycle, this);
-  foodLifeCycleThread.detach();
+  foodCycleThread_ = std::thread(&Game::foodCycle, this);
 
-  while (running) {
+  while (running_) {
     frame_start = SDL_GetTicks();
 
     // Input, Update, Render - the main game loop.
-    controller.HandleInput(running, snake_);
+    controller.HandleInput(running_, snake_);
     Update();
     const auto &position = food_->position();
     const auto &color = color_defs_.colors_[food_->color()];
@@ -71,14 +73,13 @@ void Game::Run(Controller const &controller, Renderer &renderer,
 }
 
 void Game::foodCycle() {
-  while (true) {
+  while (running_) {
     std::lock_guard<std::mutex> lock(mutex_);
     // Lock to get the access to food without any race or
     // simultaneous modifications on food
     if (food_->isExpired() || food_->isConsumed()) {
       PlaceFood();
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
   }
 }
 

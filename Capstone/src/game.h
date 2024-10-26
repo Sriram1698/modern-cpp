@@ -122,6 +122,7 @@ private:
   Snake snake_;
   Player player_;
   shared_ptr<Food> food_;
+  bool running_ = false;
   inline static const string FILE_PATH = "../data/scores.txt";
 
   std::random_device dev;
@@ -133,6 +134,7 @@ private:
   vector<shared_ptr<Food>> food_varities_;
   ColorDefs color_defs_;
   mutex mutex_;
+  std::thread foodCycleThread_;
 
   void PlaceFood();
   void Update();
