@@ -126,18 +126,25 @@ void Game::Update() {
 }
 
 void Game::updateSpeed() {
+  // Check the food type, if it is of type NO_SPEED_INCREASE_FOOD,
+  // then the speed won't get increased
   if (food_->foodType() != FoodType::NO_SPEED_INCREASE_FOOD) {
     snake_.speed += 0.02;
   }
 }
 
 void Game::updateBody() {
+  // Check if the food type is DOUBLE_INCREMENT_WITHOUT_GROWING_FOOD,
+  // then the length won't get increased, but the score incremented by 2
   if (food_->foodType() != FoodType::DOUBLE_INCREMENT_WITHOUT_GROWING_FOOD) {
     snake_.GrowBody();
   }
 }
 
 void Game::updateScore() {
+  // Check if the food type is DOUBLE_INCREMENT_WITHOUT_GROWING_FOOD,
+  // then the length won't get increased, but the score incremented by 2,
+  // otherwise by 1
   if (food_->foodType() == FoodType::DOUBLE_INCREMENT_WITHOUT_GROWING_FOOD) {
     player_.updateScore(player_.score() + 2);
   } else {
@@ -146,6 +153,7 @@ void Game::updateScore() {
 }
 
 Player Game::readFromFile(const string &&player_name) {
+  // Read the high scores from the file
   std::ifstream file(Game::FILE_PATH);
   if (file.is_open()) {
     std::string line;
@@ -164,6 +172,7 @@ Player Game::readFromFile(const string &&player_name) {
 }
 
 void Game::saveScore() {
+  // Save the high scores to the file
   const int prev_high_score = player_.prevHighScore();
   const int current_score = player_.score();
   if ((current_score > prev_high_score)) {
@@ -209,6 +218,7 @@ void Game::saveScore() {
 }
 
 void Game::populateColors() {
+  // Populate the RGB values for different colors
   color_defs_.colors_.insert({Colors::RED, Color(255, 0, 0)});
   color_defs_.colors_.insert({Colors::GREEN, Color(0, 255, 0)});
   color_defs_.colors_.insert({Colors::BLUE, Color(0, 0, 255)});
@@ -218,6 +228,7 @@ void Game::populateColors() {
 }
 
 void Game::populateFoodVarities() {
+  // Populate mutiple food types with this member values
   SDL_Point init_food_position_;
   init_food_position_.x = 0.;
   init_food_position_.y = 0.;

@@ -55,6 +55,14 @@ enum FoodType {
 
 class Food {
 public:
+  /**
+   * @brief Construct a new Food object
+   * 
+   * @param food_type 
+   * @param position 
+   * @param color 
+   * @param expiration_time 
+   */
   Food(const FoodType food_type, const SDL_Point &position, const Colors color,
        const int expiration_time)
       : food_type_(food_type), position_(position), color_(color),
@@ -62,7 +70,7 @@ public:
     time_before_it_rots_ = std::chrono::high_resolution_clock::now() +
                            std::chrono::seconds(expiration_time);
   }
-
+  
   void operator=(const Food &food) {
     food_type_ = food.food_type_;
     color_ = food.color_;
@@ -73,7 +81,7 @@ public:
   }
 
   // Setters
-  void setPosition(const float &x, const float y) {
+  void setPosition(const float &x, const float &y) {
     position_.x = x;
     position_.y = y;
   }
