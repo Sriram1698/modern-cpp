@@ -78,6 +78,7 @@ void Game::foodCycle() {
     if (food_->isExpired() || food_->isConsumed()) {
       PlaceFood();
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
   }
 }
 
