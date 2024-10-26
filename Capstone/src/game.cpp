@@ -1,5 +1,6 @@
 #include "game.h"
 #include "SDL.h"
+#include <ctime>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -30,6 +31,10 @@ void Game::Run(Controller const &controller, Renderer &renderer,
   Uint32 frame_duration;
   int frame_count = 0;
   bool running = true;
+
+  // Start the food cycle thread
+  std::thread foodLifeCycleThread(&Game::foodCycle, this);
+  foodLifeCycleThread.detach();
 
   while (running) {
     frame_start = SDL_GetTicks();
@@ -65,6 +70,17 @@ void Game::Run(Controller const &controller, Renderer &renderer,
   }
 }
 
+void Game::foodCycle() {
+  while (true) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    // Lock to get the access to food without any race or
+    // simultaneous modifications on food
+    if (food_->isExpired() || food_->isConsumed()) {
+      PlaceFood();
+    }
+  }
+}
+
 void Game::PlaceFood() {
   int x, y;
   int rand_food = food_selection_(engine);
@@ -76,6 +92,7 @@ void Game::PlaceFood() {
     // food.
     if (!snake_.SnakeCell(x, y)) {
       food_->setPosition(x, y);
+      food_->reset();
       return;
     }
   }
@@ -92,14 +109,17 @@ void Game::Update() {
   int new_y = static_cast<int>(snake_.head_y);
 
   // Check if there's food over here
+  // Lock to get the access to food without any race or
+  // simultaneous modifications on food
+  std::lock_guard<std::mutex> lock(mutex_);
   const auto &position = food_->position();
   if (position.x == new_x && position.y == new_y) {
     updateScore();
     // Grow snake and increase speed.
     updateBody();
     updateSpeed();
-    // Place new food at new place
-    PlaceFood();
+    // Set the food to be consumed
+    food_->foodConsumed();
   }
 }
 
@@ -200,12 +220,13 @@ void Game::populateFoodVarities() {
   init_food_position_.x = 0.;
   init_food_position_.y = 0.;
   food_varities_.emplace_back(std::make_shared<Food>(
-      FoodType::NORMAL_FOOD, init_food_position_, Colors::YELLOW));
+      FoodType::NORMAL_FOOD, init_food_position_, Colors::YELLOW, 10.));
   food_varities_.emplace_back(
       std::make_shared<Food>(FoodType::DOUBLE_INCREMENT_WITHOUT_GROWING_FOOD,
-                             init_food_position_, Colors::GREEN));
-  food_varities_.emplace_back(std::make_shared<Food>(
-      FoodType::NO_SPEED_INCREASE_FOOD, init_food_position_, Colors::PURPLE));
+                             init_food_position_, Colors::GREEN, 3.));
+  food_varities_.emplace_back(
+      std::make_shared<Food>(FoodType::NO_SPEED_INCREASE_FOOD,
+                             init_food_position_, Colors::PURPLE, 5.));
 }
 
 int Game::GetScore() const { return player_.score(); }
