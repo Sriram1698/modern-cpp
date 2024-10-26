@@ -30,7 +30,7 @@ void Player::printSummary() const {
             << std::endl;
   if ((current_score_ > 0) && (current_score_ > prev_high_score_)) {
     std::cout << "\n";
-    std::cout << "\t     Congradulations" << std::endl;
+    std::cout << "\t     Congratulations" << std::endl;
     std::cout << "\tA new high score achieved!" << std::endl;
     std::cout << "\n";
   }
