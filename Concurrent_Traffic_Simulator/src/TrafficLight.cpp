@@ -70,12 +70,12 @@ void TrafficLight::cycleThroughPhases() {
   std::random_device rd;
   std::mt19937 gen(rd());
 
-  std::uniform_real_distribution<> dist(4.0, 6.0);
+  std::uniform_real_distribution<> dist(4000., 6000.);
   std::chrono::time_point<std::chrono::system_clock> startTime =
       std::chrono::system_clock::now();
-
+  uint32_t expDuration = dist(gen);
+  
   while (true) {
-    uint32_t expDuration = dist(gen) * 1000.;
     uint32_t tDiff = std::chrono::duration_cast<std::chrono::milliseconds>(
                          std::chrono::system_clock::now() - startTime)
                          .count();
